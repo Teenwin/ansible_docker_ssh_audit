@@ -1,0 +1,84 @@
+---
+- name: Set hostname
+  ansible.builtin.command: hostname --fqdn
+  register: hostname_result
+  changed_when: false
+
+# - name: Получить текущую версию Ansible
+#  ansible.builtin.set_fact:
+#    ansible_version: "{{ ansible_version.full }}"
+
+- name: Получить имя пользователя, запустившего Ansible
+  ansible.builtin.set_fact:
+    ansible_user: "{{ ansible_user_id }}"
+
+- name: Чтение текущих значений из файла {{ sshd_config_path }}
+  ansible.builtin.command: >
+    grep -E
+    "^({{ ssh_audit_expected_config | dict2items | map(attribute='key') | join('|') }})[[:space:]]+"
+    "{{ sshd_config_path }}"
+  register: ssh_config_content
+  changed_when: false
+
+- name: Парсинг в словарь
+  ansible.builtin.set_fact:
+    ssh_config_parsed: >-
+      {{
+        dict(
+          ssh_config_content.stdout_lines
+          | default([])
+          | map('split', None, 1)
+        )
+      }}
+
+
+- name: 3. Формирование отчёта аудита
+  ansible.builtin.set_fact:
+    audit_result: >-
+      {{
+        {
+          'timestamp': ansible_date_time.iso8601,
+          'host': hostname_result.stdout,
+          'ansible_user': ansible_user,
+          'ansible_version': ansible_version.string,
+          'message': (
+            { 'status': 'compliant' }
+            if (
+              (ssh_audit_expected_config | dict2items | map(attribute='key') | sort) ==
+              (ssh_config_parsed | dict2items | map(attribute='key') | sort)
+            ) and (
+              ssh_config_parsed | combine(ssh_audit_expected_config, recursive=True) == ssh_config_parsed
+            )
+            else {
+              'status': 'non-compliant',
+              'PermitRootLogin': ssh_config_parsed.get('PermitRootLogin', 'not_found'),
+              'PasswordAuthentication': ssh_config_parsed.get('PasswordAuthentication', 'not_found'),
+              'MaxAuthTries': ssh_config_parsed.get('MaxAuthTries', 'not_found'),
+              'ChallengeResponseAuthentication': ssh_config_parsed.get('ChallengeResponseAuthentication', 'not_found'),
+              'X11Forwarding': ssh_config_parsed.get('X11Forwarding', 'not_found')
+            }
+          )
+        }
+      }}
+
+- name: Save report to JSON
+  ansible.builtin.copy:
+    content: "{{ audit_result | to_json(indent=4, sort_keys=False) }}"
+    dest: '{{ ssh_audit_log_file }}'
+    mode: '0644'
+
+- name: DEBUG - Проверить, создан ли файл
+  ansible.builtin.stat:
+    path: '{{ ssh_audit_log_file }}'
+  register: stat_result
+
+- name: Если файл с логами не создан, завершить плэйбук
+  ansible.builtin.fail:
+    msg: "Файл не создан! Проверь права или путь."
+  when: not stat_result.stat.exists
+
+- name: Скачать отчёт аудита на машину-контроллер ansible
+  ansible.builtin.fetch:
+    src: "{{ ssh_audit_log_file }}"
+    dest: "/logs/{{ hostname_result.stdout }}_audit_report.json"   # ← Исправлено: .stdout
+    flat: true

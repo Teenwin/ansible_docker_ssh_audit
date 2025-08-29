@@ -1,0 +1,7 @@
+---
+- name: All_hosts
+  hosts: all
+  tasks:
+    - name: Import role
+      ansible.builtin.import_role:
+        name: ssh_audit

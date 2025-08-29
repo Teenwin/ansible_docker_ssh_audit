@@ -1,4 +1,4 @@
-# handlers/main.yml
+---
 - name: Ensure log directory exists
   ansible.builtin.file:
     path: "/var/log"

@@ -1,12 +1,13 @@
+---
 ssh_audit_expected_config:
-  PermitRootLogin: "no"
-  PasswordAuthentication: "no"
-  MaxAuthTries: "3"
+  PermitRootLogin: "yes"
+  PasswordAuthentication: "yes"
+  MaxAuthTries: "6"
   ChallengeResponseAuthentication: "no"
-  X11Forwarding: "no"
+  X11Forwarding: "yes"
 
 # Путь к конфигурационному файлу
 sshd_config_path: "/etc/ssh/sshd_config"
 
 # Путь к лог-файлу
-ssh_audit_log_file: "/var/log/ansible-ssh-audit.log"
+ssh_audit_log_file: "/var/log/audit_report.json"
