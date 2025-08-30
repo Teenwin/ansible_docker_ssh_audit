@@ -3,7 +3,7 @@ ANSIBLE_LINT = ansible-lint
 ANSIBLE_PLAYBOOKS_DIR = ./ansible/playbooks
 YAML_LINT = yamllint
 YAML_LINT_CONFIG = ./.yamllint.yml
-CONTAINER_BUILD_PROGRAMM = podman#docker
+CONTAINER_BUILD_PROGRAMM = podman#docke
 IMAGE_NAME_TAG = ansible_ssh_audit_job:4
 
 .PHONY: lint lint-ansible lint-yaml build test
