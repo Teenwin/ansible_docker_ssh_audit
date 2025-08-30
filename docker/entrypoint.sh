@@ -1,5 +1,5 @@
 #!/bin/sh
-set -e
+#set -e DEBUG отключаем все коды состояния команд != 0
 
 #LOG_FILE="/tmp/*.json"
 ANSIBLE_LOG="/logs/ansible.log"
@@ -11,12 +11,11 @@ echo "Запуск Ansible роли ssh_audit..."
 ansible-playbook \
   -i inventory \
   playbooks/ssh_audit_run.yml \
-  > "${ANSIBLE_LOG}" 2>&1
+  > ${ANSIBLE_LOG} 2>&1
 
-# Проверяем, завершился ли успешно
 if [ $? -ne 0 ]; then
-  echo "Ansible завершился с ошибкой. Лог: ${ANSIBLE_LOG}"
-  tail -n 20 "${ANSIBLE_LOG}"
+  echo "Ansible-playbook завершился с ошибкой."
+  tail -50 ${ANSIBLE_LOG}
   exit 1
 fi
 
@@ -32,6 +31,7 @@ echo "Лог-файл найдены по пути /logs/"
 
 for file in /logs/*_audit_report.json; do
     if [[ -f "$file" ]]; then
+        ls "$file"
         cat "$file"
         echo  
     fi

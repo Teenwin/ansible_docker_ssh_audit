@@ -4,8 +4,9 @@ ANSIBLE_PLAYBOOKS_DIR = ./ansible/playbooks
 YAML_LINT = yamllint
 YAML_LINT_CONFIG = ./.yamllint.yml
 CONTAINER_BUILD_PROGRAMM = podman#docker
-CONTAINER_NAME_TAG = ansible_ssh_audit_job:4
+IMAGE_NAME_TAG = ansible_ssh_audit_job:4
 
+.PHONY: lint lint-ansible lint-yaml build test
 
 lint: lint-ansible lint-yaml
 
@@ -25,8 +26,12 @@ lint-yaml:
 
 build: lint
 	@echo "start build image"
-	$(CONTAINER_BUILD_PROGRAMM) build --no-cache . -t $(CONTAINER_NAME_TAG)
-	@echo "Образ $(CONTAINER_BUILD_PROGRAMM) с названием $(CONTAINER_NAME_TAG) собран!"
+	$(CONTAINER_BUILD_PROGRAMM) build --no-cache . -t $(IMAGE_NAME_TAG)
+	@echo "Образ $(CONTAINER_BUILD_PROGRAMM) с названием $(IMAGE_NAME_TAG) собран!"
+
+test: 
+	@echo "SSH_AUTH_SOCK=$$SSH_AUTH_SOCK"
+	@$(CONTAINER_BUILD_PROGRAMM) run -v $$SSH_AUTH_SOCK:/ssh-agent $(IMAGE_NAME_TAG)
 
 
-.PHONY: lint lint-ansible lint-yaml
+#clean-image:
