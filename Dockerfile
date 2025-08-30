@@ -1,5 +1,5 @@
 # DEBUG закоментировать ENTRYPOINT
-# build
+# build container
 # docker(or podman) build . -t <name_image:tag>
 # start пробрасываем локальный сокет ssh в контейнер при старте
 # docker(or podman) run -v $SSH_AUTH_SOCK:/ssh-agent <name_container:tag>
