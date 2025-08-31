@@ -63,7 +63,7 @@
 
 - name: Save report to JSON
   ansible.builtin.copy:
-    content: "{{ audit_result | to_json(indent=4, sort_keys=False) }}"
+    content: "{{ audit_result | to_json }}"
     dest: '{{ ssh_audit_log_file }}'
     mode: '0644'
 
@@ -80,5 +80,5 @@
 - name: Скачать отчёт аудита на машину-контроллер ansible
   ansible.builtin.fetch:
     src: "{{ ssh_audit_log_file }}"
-    dest: "/logs/{{ hostname_result.stdout }}_audit_report.json"   # ← Исправлено: .stdout
+    dest: "/logs/{{ hostname_result.stdout }}_ssh_audit.json"   # ← Исправлено: .stdout
     flat: true
