@@ -1,0 +1,62 @@
+name: Ansible SSH Audit CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  ansible-ssh-audit:
+    runs-on: ubuntu-latest
+    services:
+      podman:
+        image: quay.io/containers/podman
+        ports:
+          - 8080:8080
+        options: >-
+          --name podman-service
+          --privileged
+          --security-opt seccomp=unconfined
+          --security-opt apparmor=unconfined
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Podman
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y podman jq
+          podman --version
+
+      - name: Install dependencies for ansible-lint
+        run: |
+          sudo apt-get install -y python3-pip
+          pip3 install ansible-lint yamllint
+
+      - name: Run lint checks
+        run: |
+          make lint
+
+      - name: Build container image
+        run: |
+          make build
+
+      - name: Run container and execute audit
+        run: |
+          make test
+
+      - name: Check audit logs (JSON output)
+        run: |
+          make log-check
+
+      - name: Upload audit logs as artifact (optional)
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: ssh-audit-logs
+          path: |
+            $(podman logs $(IMAGE_NAME) 2>/dev/null || echo "No logs") > logs.txt
+            logs.txt
+          retention-days: 7
