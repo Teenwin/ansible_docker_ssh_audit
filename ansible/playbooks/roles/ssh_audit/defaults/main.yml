@@ -7,7 +7,7 @@ ssh_audit_expected_config:
   X11Forwarding: "yes"
 
 # Путь к конфигурационному файлу
-sshd_config_path: "/etc/ssh/sshd_config"
+ssh_audit_sshd_config_path: "/etc/ssh/sshd_config"
 
 # Путь к лог-файлу
 ssh_audit_log_file: "/var/log/audit_report.json"

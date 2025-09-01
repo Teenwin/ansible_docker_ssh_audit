@@ -1,7 +1,7 @@
 ---
 - name: Set hostname
   ansible.builtin.command: hostname --fqdn
-  register: hostname_result
+  register: ssh_audit_hostname_result
   changed_when: false
 
 # - name: Получить текущую версию Ansible
@@ -12,20 +12,20 @@
   ansible.builtin.set_fact:
     ansible_user: "{{ ansible_user_id }}"
 
-- name: Чтение текущих значений из файла {{ sshd_config_path }}
+- name: Чтение текущих значений из файла {{ ssh_audit_sshd_config_path }}
   ansible.builtin.command: >
     grep -E
     "^({{ ssh_audit_expected_config | dict2items | map(attribute='key') | join('|') }})[[:space:]]+"
-    "{{ sshd_config_path }}"
-  register: ssh_config_content
+    "{{ ssh_audit_sshd_config_path }}"
+  register: ssh_audit_ssh_config_content
   changed_when: false
 
 - name: Парсинг в словарь
   ansible.builtin.set_fact:
-    ssh_config_parsed: >-
+    ssh_audit_ssh_config_parsed: >-
       {{
         dict(
-          ssh_config_content.stdout_lines
+          ssh_audit_ssh_config_content.stdout_lines
           | default([])
           | map('split', None, 1)
         )
@@ -34,28 +34,28 @@
 
 - name: Формирование отчёта аудита
   ansible.builtin.set_fact:
-    audit_result: >-
+    ssh_audit_audit_result: >-
       {{
         {
           'timestamp': ansible_date_time.iso8601,
-          'host': hostname_result.stdout,
+          'host': ssh_audit_hostname_result.stdout,
           'ansible_user': ansible_user,
           'ansible_version': ansible_version.string,
           'message': (
             { 'status': 'compliant' }
             if (
               (ssh_audit_expected_config | dict2items | map(attribute='key') | sort) ==
-              (ssh_config_parsed | dict2items | map(attribute='key') | sort)
+              (ssh_audit_ssh_config_parsed | dict2items | map(attribute='key') | sort)
             ) and (
-              ssh_config_parsed | combine(ssh_audit_expected_config, recursive=True) == ssh_config_parsed
+              ssh_audit_ssh_config_parsed | combine(ssh_audit_expected_config, recursive=True) == ssh_audit_ssh_config_parsed
             )
             else {
               'status': 'non-compliant',
-              'PermitRootLogin': ssh_config_parsed.get('PermitRootLogin', 'not_found'),
-              'PasswordAuthentication': ssh_config_parsed.get('PasswordAuthentication', 'not_found'),
-              'MaxAuthTries': ssh_config_parsed.get('MaxAuthTries', 'not_found'),
-              'ChallengeResponseAuthentication': ssh_config_parsed.get('ChallengeResponseAuthentication', 'not_found'),
-              'X11Forwarding': ssh_config_parsed.get('X11Forwarding', 'not_found')
+              'PermitRootLogin': ssh_audit_ssh_config_parsed.get('PermitRootLogin', 'not_found'),
+              'PasswordAuthentication': ssh_audit_ssh_config_parsed.get('PasswordAuthentication', 'not_found'),
+              'MaxAuthTries': ssh_audit_ssh_config_parsed.get('MaxAuthTries', 'not_found'),
+              'ChallengeResponseAuthentication': ssh_audit_ssh_config_parsed.get('ChallengeResponseAuthentication', 'not_found'),
+              'X11Forwarding': ssh_audit_ssh_config_parsed.get('X11Forwarding', 'not_found')
             }
           )
         }
@@ -63,22 +63,22 @@
 
 - name: Save report to JSON
   ansible.builtin.copy:
-    content: "{{ audit_result | to_json }}"
+    content: "{{ ssh_audit_audit_result | to_json }}"
     dest: '{{ ssh_audit_log_file }}'
     mode: '0644'
 
 - name: DEBUG - Проверить, создан ли файл
   ansible.builtin.stat:
     path: '{{ ssh_audit_log_file }}'
-  register: stat_result
+  register: ssh_audit_stat_result
 
 - name: Если файл с логами не создан, завершить плэйбук
   ansible.builtin.fail:
     msg: "Файл не создан! Проверь права или путь."
-  when: not stat_result.stat.exists
+  when: not ssh_audit_stat_result.stat.exists
 
 - name: Скачать отчёт аудита на машину-контроллер ansible
   ansible.builtin.fetch:
     src: "{{ ssh_audit_log_file }}"
-    dest: "/logs/{{ hostname_result.stdout }}_ssh_audit.json"   # ← Исправлено: .stdout
+    dest: "/logs/{{ ssh_audit_hostname_result.stdout }}_ssh_audit.json"   # ← Исправлено: .stdout
     flat: true

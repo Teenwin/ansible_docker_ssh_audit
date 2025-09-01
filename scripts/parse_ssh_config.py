@@ -55,18 +55,18 @@ def main():
 
         # Сравниваем
         compliant = True
-        audit_result = {}
+        ssh_audit_audit_result = {}
 
         for param, expected_value in baseline.items():
             actual_value = current_config.get(param)
             if actual_value is None:
-                audit_result[param] = f"missing (expected: {expected_value})"
+                ssh_audit_audit_result[param] = f"missing (expected: {expected_value})"
                 compliant = False
             elif actual_value != expected_value:
-                audit_result[param] = f"mismatch: got '{actual_value}', expected '{expected_value}'"
+                ssh_audit_audit_result[param] = f"mismatch: got '{actual_value}', expected '{expected_value}'"
                 compliant = False
             else:
-                audit_result[param] = f"ok: {actual_value}"
+                ssh_audit_audit_result[param] = f"ok: {actual_value}"
 
         # Формируем вывод
         result = {
@@ -75,7 +75,7 @@ def main():
             "message": {
                 "status": "compliant" if compliant else "non-compliant",
                 "audit": "sshd_config",
-                "results": audit_result
+                "results": ssh_audit_audit_result
             }
         }
 
