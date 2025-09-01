@@ -44,7 +44,7 @@ test-local:
 	fi 
 
 test-ci:
-	$(CONTAINER_BUILD_PROGRAMM) run -d --name $(IMAGE_NAME) \
+	$(CONTAINER_BUILD_PROGRAMM) run --name $(IMAGE_NAME) \
 	$(REPOSITORY)/$(IMAGE_NAME):$(IMAGE_TAG)
 
 log-check:
