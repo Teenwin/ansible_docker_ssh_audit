@@ -1,56 +1,22 @@
-name: Ansible SSH Audit CI
+name: Test Ansible
 
-on:
-  push:
-    branches: [ main, develop ]
-  pull_request:
-    branches: [ main ]
+on: [push]
 
 jobs:
-  ansible-ssh-audit:
+  test:
     runs-on: ubuntu-latest
-    services:
-      podman:
-        image: quay.io/containers/podman
-        ports:
-          - 8080:8080
-        options: >-
-          --name podman-service
-          --privileged
-          --security-opt seccomp=unconfined
-          --security-opt apparmor=unconfined
-
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Set up Podman
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y podman jq
-          podman --version
-
-      - name: Install dependencies for ansible-lint
-        run: |
-          sudo apt-get install -y python3-pip
-          pip3 install ansible-lint yamllint
-
-      - name: Run lint checks
-        run: |
-          make lint
 
       - name: Start SSH target container
         run: |
-          docker run -d --name ssh-target -p 2222:22 rastasheep/ubuntu-sshd:18.04
+          podman run -d --name ssh-target -p 2222:22 rastasheep/ubuntu-sshd:18.04
 
       - name: Wait for SSH
         run: |
           until podman exec ssh-target ping -c1 127.0.0.1; do sleep 1; done
-          sleep 5  # Дать SSH-серверу запуститься
-
-#      - name: Build container image
-#        run: |
-#          make build
+          sleep 5
 
       - name: Setup SSH key
         env:
@@ -63,18 +29,9 @@ jobs:
 
       - name: Run Ansible
         run: |
-          ansible-playbook -i "localhost:2222," -u root ./ansible/playbook/ssh_audit_run.yml
+          ansible-playbook -i "localhost:2222," -u root ./ansible/playbooks/ssh_audit_run.yml
 
-#      - name: Check audit logs (JSON output)
-#        run: |
-#          make log-check
-
-      - name: Upload audit logs as artifact (optional)
+      - name: Cleanup
         if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: ssh-audit-logs
-          path: |
-            $(podman logs $(IMAGE_NAME) 2>/dev/null || echo "No logs") > logs.txt
-            logs.txt
-          retention-days: 7
+        run: |
+          podman rm -f ssh-target || true
