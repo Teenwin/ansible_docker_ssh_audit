@@ -1,4 +1,4 @@
-# DEBUG закоментировать ENTRYPOINT
+# DEBUG закоментировать  ENTRYPOINT
 # build container
 # docker(or podman) build . -t <name_image:tag>
 # start пробрасываем локальный сокет ssh в контейнер при старте
