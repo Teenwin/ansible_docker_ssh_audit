@@ -45,7 +45,7 @@ jobs:
 
       - name: Wait for SSH
         run: |
-          until docker exec ssh-target ping -c1 127.0.0.1; do sleep 1; done
+          until podman exec ssh-target ping -c1 127.0.0.1; do sleep 1; done
           sleep 5  # Дать SSH-серверу запуститься
 
 #      - name: Build container image
