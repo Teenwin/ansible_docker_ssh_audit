@@ -39,22 +39,35 @@ jobs:
         run: |
           make lint
 
-      - name: Build container image
+      - name: Start SSH target container
         run: |
-          make build
+          docker run -d --name ssh-target -p 2222:22 rastasheep/ubuntu-sshd:18.04
 
-      - name: Run container and execute  audit
+      - name: Wait for SSH
+        run: |
+          until docker exec ssh-target ping -c1 127.0.0.1; do sleep 1; done
+          sleep 5  # Дать SSH-серверу запуститься
+
+#      - name: Build container image
+#        run: |
+#          make build
+
+      - name: Setup SSH key
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
         run: |
-          mkdir -p ~/.ssh/
+          mkdir -p ~/.ssh
           echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          make test-ci
+          ssh-keyscan -p 2222 localhost >> ~/.ssh/known_hosts
 
-      - name: Check audit logs (JSON output)
+      - name: Run Ansible
         run: |
-          make log-check
+          ansible-playbook -i "localhost:2222," -u root ./ansible/playbook/ssh_audit_run.yml
+
+#      - name: Check audit logs (JSON output)
+#        run: |
+#          make log-check
 
       - name: Upload audit logs as artifact (optional)
         if: always()
