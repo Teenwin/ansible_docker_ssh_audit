@@ -44,7 +44,11 @@ jobs:
           make build
 
       - name: Run container and execute audit
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
         run: |
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
           make test
 
       - name: Check audit logs (JSON output)
