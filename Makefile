@@ -33,7 +33,7 @@ build: lint
 	$(CONTAINER_BUILD_PROGRAMM) build --no-cache . -t $(IMAGE_NAME):$(IMAGE_TAG)
 	@echo "Образ $(CONTAINER_BUILD_PROGRAMM) с названием $(IMAGE_NAME):$(IMAGE_TAG) собран!"
 
-test: 
+test-local: 
 	@if $(CONTAINER_BUILD_PROGRAMM) image list --format "{{.Repository}}:{{.Tag}}" | grep -q "$(REPOSITORY)/$(IMAGE_NAME):$(IMAGE_TAG)"; then \
 	echo "SSH_AUTH_SOCK=$$SSH_AUTH_SOCK"; \
 	$(CONTAINER_BUILD_PROGRAMM) run -d --name $(IMAGE_NAME) -v $$SSH_AUTH_SOCK:/ssh-agent $(IMAGE_NAME):$(IMAGE_TAG); \
@@ -42,6 +42,10 @@ test:
 	echo "SSH_AUTH_SOCK=$$SSH_AUTH_SOCK"; \
 	$(CONTAINER_BUILD_PROGRAMM) run -d --name $(IMAGE_NAME) -v $$SSH_AUTH_SOCK:/ssh-agent $(IMAGE_NAME):$(IMAGE_TAG); \
 	fi 
+
+test-ci:
+	$(CONTAINER_BUILD_PROGRAMM) run -d --name $(IMAGE_NAME) \
+	$(REPOSITORY)/$(IMAGE_NAME):$(IMAGE_TAG)
 
 log-check:
 	@if $(CONTAINER_BUILD_PROGRAMM) logs $(IMAGE_NAME) | jq -c . 2>&1 ; \
