@@ -23,8 +23,8 @@ jobs:
       - name: Print Ansible version
         run: ansible-playbook --version
       - name: run docker container
-        run: docker run -d --name ssh-host -p 2222:22 rastasheep/ubuntu-sshd:20.04
-      - name: Wait for SSH
+        run: docker run -d --name ssh-host -p 2222:22 rastasheep/ubuntu-sshd:18.04
+      - name: Wait for SSH container starts on port 2222
         run: |
           until nc -z localhost 2222; do sleep 1; done
           sleep 3
