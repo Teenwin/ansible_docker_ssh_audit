@@ -30,6 +30,15 @@ jobs:
           sleep 3
       - name: install python3 in container
         run: docker exec ssh-host apt install -y python3
+      - name: test ansible in container
+        run: |
+          ansible-playbook \
+            -i "localhost:2222," \
+            -u root \
+            -e "ansible_ssh_pass=root" \
+            -e "ansible_python_interpreter=/usr/bin/python3" \
+            -e "ansible_ssh_common_args='-o StrictHostKeyChecking=no'" \
+            -m ping
 
       - name: Run Ansible
         run: |
