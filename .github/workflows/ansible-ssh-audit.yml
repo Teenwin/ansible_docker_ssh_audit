@@ -25,7 +25,7 @@ jobs:
 
       - name: Install Python in target container
         run: |
-          docker exec ssh-target apt-get update && apt-get install -y python3
+          docker exec -u root ssh-target apt-get update && apt-get install -y python3
 
 #      - name: Run Ansible
 #        run: |
