@@ -19,7 +19,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       - name: "Install Ansible"
-        run: apt install ansible
+        run: sudo apt install ansible
 
       
       - name: Print Ansible version
