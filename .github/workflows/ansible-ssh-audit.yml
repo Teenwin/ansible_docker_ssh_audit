@@ -11,7 +11,7 @@ jobs:
 
       - name: Start SSH target container
         run: |
-          podman run -d --name ssh-target -p 2222:22 rastasheep/ubuntu-sshd:18.04
+          podman run -d --name ssh-target -p 2222:22 geerlingguy/docker-ubuntu2004-ansible:latest
 
 #      - name: Wait for SSH
 #        run: |
