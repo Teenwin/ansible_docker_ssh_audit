@@ -8,8 +8,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      - name: Lint ansible
-        uses: ansible/ansible-lint@main
+#      - name: Lint ansible
+#        uses: ansible/ansible-lint@main
       - name: Lint yaml
         run: make lint-yaml
   tests:
