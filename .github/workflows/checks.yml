@@ -1,4 +1,4 @@
-name: Lint
+name: checks
 
 on: [push]
 
@@ -8,8 +8,11 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      - name: Lint ansible yaml
-        run: make lint
+      - name: Lint ansible
+        uses: |
+          ansible/ansible-lint@main
+      - name: Lint yaml
+        run: make lint-yaml
   tests:
     runs-on: ubuntu-latest
     needs: [lint-check]
