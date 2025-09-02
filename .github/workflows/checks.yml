@@ -19,7 +19,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       - name: "Install Ansible"
-        uses: alex-oleshkevich/setup-ansible@v1.0.1
+        run: apt install ansible
 
       
       - name: Print Ansible version
