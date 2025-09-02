@@ -20,7 +20,7 @@ lint-ansible:
 	else echo "Программа ansible-lint отсутствует устанавливаю ansible-lint через apt"; \
 	sudo apt install $(ANSIBLE_LINT); \
 	echo "$(ANSIBLE_LINT) устанавлен, запустите команду make еще раз!!!"; \
-	$(ANSIBLE_LINT) $(ANSIBLE_PLAYBOOKS_DIR)
+	$(ANSIBLE_LINT) $(ANSIBLE_PLAYBOOKS_DIR); \
 	fi
 
 lint-yaml:
