@@ -19,9 +19,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       - name: "Install Ansible"
-        uses: alex-oleshkevich/setup-ansible@VERSION 
-        with:
-          version: "9.3.0"
+        uses: alex-oleshkevich/setup-ansible@v1.0.1
+
       
       - name: Print Ansible version
         run: ansible-playbook --version
