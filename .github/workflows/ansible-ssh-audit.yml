@@ -29,7 +29,7 @@ jobs:
 
       - name: Run Ansible
         run: |
-          ansible-playbook -i "localhost:2222," -u ansible -e "ansible_ssh_pass=ansible" -e "ansible_ssh_common_args='-o StrictHostKeyChecking=no'" ./ansible/playbooks/ssh_audit_run.yml
+          ansible-playbook -i "ssh-target:2222," -u ansible -e "ansible_ssh_pass=ansible" -e "ansible_ssh_common_args='-o StrictHostKeyChecking=no'" ./ansible/playbooks/ssh_audit_run.yml
 
       - name: Cleanup
         if: always()
