@@ -18,18 +18,18 @@ jobs:
 #          until podman exec ssh-target ping -c1 127.0.0.1; do sleep 1; done
 #          sleep 5
 
-      - name: Setup SSH key
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-        run: |
-          mkdir -p ~/.ssh
-          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -p 2222 localhost >> ~/.ssh/known_hosts
+#      - name: Setup SSH key
+#        env:
+#          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+#        run: |
+#          mkdir -p ~/.ssh
+#          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+#          chmod 600 ~/.ssh/id_rsa
+#          ssh-keyscan -p 2222 localhost >> ~/.ssh/known_hosts
 
       - name: Run Ansible
         run: |
-          ansible-playbook -i "localhost:2222" -u root ./ansible/playbooks/ssh_audit_run.yml
+          ansible-playbook -i "localhost:2222," -u root -e "ansible_ssh_pass=root" -e "ansible_ssh_common_args='-o StrictHostKeyChecking=no'" ./ansible/playbooks/ssh_audit_run.yml
 
       - name: Cleanup
         if: always()
