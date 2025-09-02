@@ -1,0 +1,44 @@
+name: Lint
+
+on: [push]
+
+jobs:
+  lint-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Lint
+        run: make lint
+#      - name: apt install
+#        run: |
+#          sudo apt-get update
+#          sudo apt install -y python3 ansible
+#
+#      - name: Start SSH container
+#        run: |
+#          docker run -d --name ssh-target -p 2222:22 rastasheep/ubuntu-sshd:18.04
+#
+#      - name: Wait for SSH
+#        run: |
+#          until nc -z localhost 2222; do sleep 1; done
+#          sleep 3
+#
+#      - name: Install Python in target container
+#        run: |
+#          docker exec ssh-target sudo apt-get update && sudo apt-get install -y python3
+#
+#      - name: Run Ansible
+#        run: |
+#          ansible-playbook \
+#            -i "localhost:2222," \
+#            -u root \
+#            -e "ansible_ssh_pass=root" \
+#            -e "ansible_python_interpreter=/usr/bin/python3" \
+#            -e "ansible_ssh_common_args='-o StrictHostKeyChecking=no'" \
+#            ./ansible/playbooks/ssh_audit_run.yml
+#
+#      - name: Cleanup
+#        if: always()
+#        run: |
+#          docker rm -f ssh-target || true
