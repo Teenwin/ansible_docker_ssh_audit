@@ -8,9 +8,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      - name: install deps
-        run: sudo apt install -y ansible-lint
-      - name: Lint
+      - name: Lint ansible yaml
         run: make lint
   tests:
     runs-on: ubuntu-latest
@@ -18,8 +16,13 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      - name: install docker python ansible
-        run: sudo apt install -y docker python3 ansible
+      - name: "Install Ansible"
+        uses: alex-oleshkevich/setup-ansible@VERSION 
+        with:
+          version: "9.3.0"
+      
+      - name: Print Ansible version
+        run: ansible-playbook --version
 #      - name: apt install
 #        run: |
 #          sudo apt-get update
