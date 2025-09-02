@@ -6,32 +6,39 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Start SSH target container
+      - name: Install dependencies
         run: |
-          podman run -d --name ssh-target -p 2222:22 geerlingguy/docker-ubuntu2004-ansible:latest
+          sudo apt-get update
+          sudo apt-get install -y docker.io
+          pip3 install ansible
 
-#      - name: Wait for SSH
-#        run: |
-#          until podman exec ssh-target ping -c1 127.0.0.1; do sleep 1; done
-#          sleep 5
+      - name: Start SSH container
+        run: |
+          docker run -d --name ssh-target -p 2222:22 rastasheep/ubuntu-sshd:18.04
 
-#      - name: Setup SSH key
-#        env:
-#          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-#        run: |
-#          mkdir -p ~/.ssh
-#          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
-#          chmod 600 ~/.ssh/id_rsa
-#          ssh-keyscan -p 2222 localhost >> ~/.ssh/known_hosts
+      - name: Wait for SSH
+        run: |
+          until nc -z localhost 2222; do sleep 1; done
+          sleep 3
+
+      - name: Install Python in target container
+        run: |
+          docker exec ssh-target apt-get update && apt-get install -y python3
 
       - name: Run Ansible
         run: |
-          ansible-playbook -i "ssh-target:2222," -u ansible -e "ansible_ssh_pass=ansible" -e "ansible_ssh_common_args='-o StrictHostKeyChecking=no'" ./ansible/playbooks/ssh_audit_run.yml
+          ansible-playbook \
+            -i "localhost:2222," \
+            -u root \
+            -e "ansible_ssh_pass=root" \
+            -e "ansible_python_interpreter=/usr/bin/python3" \
+            -e "ansible_ssh_common_args='-o StrictHostKeyChecking=no'" \
+            ./ansible/playbooks/ssh_audit_run.yml
 
       - name: Cleanup
         if: always()
         run: |
-          podman rm -f ssh-target || true
+          docker rm -f ssh-target || true
