@@ -8,8 +8,18 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+      - name: install deps
+        run: apt install -y ansible-lint
       - name: Lint
         run: make lint
+  tests:
+    runs-on: ubuntu-latest
+    needs: [lint-check]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: install docker python ansible
+        run: apt install -y docker python3 ansible
 #      - name: apt install
 #        run: |
 #          sudo apt-get update
