@@ -9,11 +9,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install dependencies
+      - name: apt install
         run: |
           sudo apt-get update
-          sudo apt-get install -y docker.io
-          pip3 install ansible
+          sudo apt install -y python3 ansible
 
       - name: Start SSH container
         run: |
@@ -28,17 +27,17 @@ jobs:
         run: |
           docker exec ssh-target apt-get update && apt-get install -y python3
 
-      - name: Run Ansible
-        run: |
-          ansible-playbook \
-            -i "localhost:2222," \
-            -u root \
-            -e "ansible_ssh_pass=root" \
-            -e "ansible_python_interpreter=/usr/bin/python3" \
-            -e "ansible_ssh_common_args='-o StrictHostKeyChecking=no'" \
-            ./ansible/playbooks/ssh_audit_run.yml
+#      - name: Run Ansible
+#        run: |
+#          ansible-playbook \
+#            -i "localhost:2222," \
+#            -u root \
+#            -e "ansible_ssh_pass=root" \
+#            -e "ansible_python_interpreter=/usr/bin/python3" \
+#            -e "ansible_ssh_common_args='-o StrictHostKeyChecking=no'" \
+#            ./ansible/playbooks/ssh_audit_run.yml
 
-      - name: Cleanup
-        if: always()
-        run: |
-          docker rm -f ssh-target || true
+#      - name: Cleanup
+#        if: always()
+#        run: |
+#          docker rm -f ssh-target || true
