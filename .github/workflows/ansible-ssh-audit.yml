@@ -29,7 +29,7 @@ jobs:
 
       - name: Run Ansible
         run: |
-          ansible-playbook -i "localhost:2222," -u root ./ansible/playbooks/ssh_audit_run.yml
+          ansible-playbook -i "localhost:2222" -u root ./ansible/playbooks/ssh_audit_run.yml
 
       - name: Cleanup
         if: always()
