@@ -8,12 +8,10 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      - name: install ansible-lint
-        run: |
-          sudo apt update && sudo apt upgrade -y
-          sudo apt install ansible-lint
-      - name: Lint ansible
-        run: ansible-lint ./ansible-container/ansible/
+      - name: Run ansible-lint
+        uses: ansible/ansible-lint@v25.8.2
+        with:
+          args: "./ansible-container/ansible/"
       - name: Lint yaml
         run: make lint-yaml
         
