@@ -4,9 +4,11 @@ services:
   ansible-container:
     build: ./ansible-container
     container_name: ansible-container
+    command: sleep infinity
     depends_on:
       - ssh-target
     restart: "no"
+    
 
   ssh-target:
     build: ./target-container
