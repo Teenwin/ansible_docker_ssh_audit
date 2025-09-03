@@ -62,5 +62,5 @@ jobs:
           name: ansible-audit-result
           path: .
 
-      - name: 
+      - name: check json
         run: jq . ansible_ssh_audit.json
