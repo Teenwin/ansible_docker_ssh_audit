@@ -12,11 +12,13 @@ jobs:
         run: sudo apt install -y ansible-lint
 #      - name: Lint ansible
 #        uses: ansible/ansible-lint@main
-      - name: Lint yaml ansible
-        run: |
-          make lint ;
-          ansible-lint ./ansible/playbooks ;
-
+      - name: Lint yaml
+        run: make lint
+      - name: Lint Ansible playbooks
+        uses: osism/ansible-lint-action@main
+        with:
+          targets: ./ansible/playbooks
+        
   tests:
     runs-on: ubuntu-latest
     needs: [lint-check]
