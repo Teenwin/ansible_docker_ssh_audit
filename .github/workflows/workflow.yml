@@ -10,7 +10,7 @@ jobs:
         uses: actions/checkout@v4
       - name: install ansible-lint
         run: |
-          sudo apt update sudo apt upgrade -y
+          sudo apt update && sudo apt upgrade -y
           sudo apt install ansible-lint
       - name: Lint ansible
         run: ansible-lint ./ansible-container/ansible/
