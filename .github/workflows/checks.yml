@@ -54,8 +54,6 @@ jobs:
     needs: tests
     runs-on: ubuntu-latest
     steps:
-      - name: install jq
-        run: apt update && apt install jq -y
       - name: Download artifact
         uses: actions/download-artifact@v4
         with:
