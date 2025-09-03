@@ -17,7 +17,7 @@ jobs:
       - name: Lint yaml
         run: make lint-yaml
         
-  tests:
+  build-test:
     runs-on: ubuntu-latest
     needs: [lint-check]
     services:
@@ -56,7 +56,7 @@ jobs:
           path: ansible_ssh_result.json
 
   log-check:
-    needs: tests
+    needs: build-test
     runs-on: ubuntu-latest
     steps:
       - name: Download artifact
