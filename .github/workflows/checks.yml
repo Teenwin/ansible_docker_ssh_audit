@@ -33,3 +33,6 @@ jobs:
       
       - name: show json
         run: docker compose logs --no-log-prefix ansible-container | tail -1 | jq .
+
+      - name: another way see json
+        run: docker exec ansible-container cat /logs/*.json
