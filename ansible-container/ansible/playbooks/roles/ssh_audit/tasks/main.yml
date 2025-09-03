@@ -1,6 +1,6 @@
 ---
 - name: Set hostname
-  ansible.builtin.command: hostname --fqdn
+  ansible.builtin.command: hostname
   register: ssh_audit_hostname_result
   changed_when: false
 

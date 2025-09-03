@@ -6,7 +6,7 @@ ANSIBLE_LOG="/logs/ansible.log"
 
 #echo "Запуск Ansible роли ssh_audit..."
 ansible-playbook \
-  -i /ansible/inventory \
+  -i /ansible/inventory.ini \
   /ansible/playbooks/ssh_audit_run.yml \
   > ${ANSIBLE_LOG} 2>&1
 

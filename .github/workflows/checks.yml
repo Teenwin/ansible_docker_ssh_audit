@@ -19,46 +19,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: "Install Ansible and jq"
-        run: sudo apt update && sudo apt install ansible jq sshpass 
+      - name: Set up Docker
+        uses: docker/setup-qemu-action@v3
 
-      - name: Print Ansible version
-        run:  ansible-playbook --version
-      - name: run docker container
-        run: docker run -d --name ssh-host -p 2222:22 rastasheep/ubuntu-sshd:18.04
+      - name: Set up Docker Compose
+        uses: docker/setup-buildx-action@v3
 
-      - name: Wait for SSH container starts on port 2222
-        run: |
-          until nc -z localhost 2222; do sleep 1; done
-          sleep 3
-      - name: Update docker apt
-        run: docker exec ssh-host apt update && apt upgrade
+      - name: Start services with Docker Compose
+        run: docker compose up -d --build
       
-      - name: install python3 in container
-        run: docker exec ssh-host apt install -y python3 python3-distutils && python3 --version
-
-      - name: test ansible in container
-        run: |
-          ansible all -i "localhost:2222," -u root \
-            -e "ansible_ssh_pass=root" \
-            -e "ansible_python_interpreter=/usr/bin/python3" \
-            -e "ansible_ssh_common_args='-o StrictHostKeyChecking=no'" \
-            -m ping
-
-      - name: Run Ansible
-        run: |
-          ansible-playbook \
-            -i "localhost:2222," \
-            -u root \
-            -e "ansible_ssh_pass=root" \
-            -e "ansible_python_interpreter=/usr/bin/python3" \
-            -e "ansible_ssh_common_args='-o StrictHostKeyChecking=no'" \
-            ./ansible/playbooks/ssh_audit_run.yml
-
-      - name: show audit_log
-        run: docker exec ssh-host cat /var/log/audit_report.json | jq .
-      
-      - name: Cleanup
-        if: always()
-        run: |
-          docker rm -f ssh-host || true
+      - name: show json
+        run: docker-compose logs --no-log-prefix ansible-container | tail -1 | jq .

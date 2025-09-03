@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  ansible-container:
+    build: ./ansible-container
+    container_name: ansible-container
+    depends_on:
+      - ssh-target
+    restart: "no"
+
+  ssh-target:
+    build: ./target-container
+    ports:
+      - "2222:22"
+    container_name: ssh-target
+    # volumes:
+    #   - ./keys/id_rsa.pub:/tmp/id_rsa.pub
+    #   - ./setup-keys.sh:/setup-keys.sh

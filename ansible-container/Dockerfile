@@ -7,7 +7,7 @@
 FROM alpine:3.22.1
 ENV SSH_AUTH_SOCK=/ssh-agent
 ENV ANSIBLE_CONFIG=/ansible/ansible.cfg
-RUN apk add --no-cache ansible openssh python3 py3-pip jq curl
+RUN apk add --no-cache ansible openssh python3 py3-pip jq curl sshpass
 COPY ./ansible/ /ansible/
 #COPY config/ /config/
 #COPY ./scripts/ /scripts/
