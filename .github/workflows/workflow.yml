@@ -9,7 +9,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       - name: install ansible-yaml
-        run: sudo apt install -y ansible-yaml
+        run: sudo apt install -y ansible-lint
 #      - name: Lint ansible
 #        uses: ansible/ansible-lint@main
       - name: Lint yaml ansible
