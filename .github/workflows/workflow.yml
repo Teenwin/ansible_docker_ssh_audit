@@ -10,6 +10,10 @@ jobs:
         uses: actions/checkout@v4
 #      - name: Lint ansible
 #        uses: ansible/ansible-lint@main
+      - name: install ansible-lint
+        run: sudo apt install ansible-lint
+      - name: DEBUG show ansible-lint version
+        run: ansible-lint --version
       - name: Lint yaml
         run: make lint-yaml
         
