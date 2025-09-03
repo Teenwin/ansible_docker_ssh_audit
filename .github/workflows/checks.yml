@@ -29,10 +29,10 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Start services with Docker Compose
-        run: docker compose up --build
+        run: docker compose up -d --build
       
       - name: DEBUG
         run: docker ps -a
 
       - name: show json
-        run: docker logs ansible-container | tail -1 | jq .
+        run: docker compose logs | tail -1 | jq .
