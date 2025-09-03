@@ -8,6 +8,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+      - name: export ANSIBLE_CONFIG for check ansible-lint
+        run: export ANSIBLE_CONFIG=./ansible-container/ansible/ansible.cfg
       - name: Run ansible-lint
         uses: ansible/ansible-lint@v25.8.2
         with:
