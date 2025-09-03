@@ -31,5 +31,8 @@ jobs:
       - name: Start services with Docker Compose
         run: docker compose up -d --build
       
+      - name: DEBUG
+        run: docker ps -a
+
       - name: show json
         run: docker logs ansible-container | tail -1 | jq .
