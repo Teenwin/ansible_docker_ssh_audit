@@ -35,4 +35,4 @@ jobs:
         run: docker ps -a
 
       - name: show json
-        run: docker compose logs | tail -1 | jq .
+        run: docker compose logs
